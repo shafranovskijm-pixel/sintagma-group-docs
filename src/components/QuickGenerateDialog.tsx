@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Zap, X, Check, Loader2, FileSignature, Users, Calendar, BookOpen } from "lucide-react";
 import type { Student, ContractTemplate, GroupInfo, GeneratedContract } from "@/types";
 import { mockGenerateContract } from "@/lib/mockData";
@@ -103,7 +103,7 @@ export function QuickGenerateDialog({
   );
 }
 
-function SummaryRow({ icon, label, children }: { icon: React.ReactNode; label: string; children: React.ReactNode }) {
+function SummaryRow({ icon, label, children }: { icon: ReactNode; label: string; children: ReactNode }) {
   return (
     <div className="flex gap-3 rounded-xl border border-border p-3">
       <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shrink-0">{icon}</div>
