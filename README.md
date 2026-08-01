@@ -1,52 +1,23 @@
 # sintagma-group-docs
 
-Модуль **«Документы группы»** по реальным шаблонам ООО «ИЦ «ГОРЭЛТЕХ».
+Генератор пакета документов группы ДПО по шаблонам ООО «ИЦ «ГОРЭЛТЕХ».
 
-## Запуск
+## Статус
+- 10/10 типов документов генерируются без незаполненных переменных
+- Договор — дословный шаблон из архива клиента (разделы 1–12)
+- Приказы с номерами УЦ-N/YYYY
+- UI: папки Windows (Договоры / Документы группы)
 
+## Интеграция в Синтагму
+См. [INTEGRATION.md](./INTEGRATION.md)
+
+## Локально
 ```bash
 npm install
 npm run dev
 ```
 
-Или откройте `demo.html` в браузере (без сборки).
+Исходники генератора: `src/lib/`
+Компонент папок: `src/components/GroupFolderView.tsx`
 
-## Алгоритм заполнения
-
-```
-GenerationContext (organization + group + students + company)
-        │
-        ▼
-buildVariables(ctx, { documentNumber, totalPrice, … })
-        │  • даты обучения → day1..day4
-        │  • заказчик = company ИЛИ физлицо
-        │  • таблицы: students / journal / attestation / FRDO / pass
-        │  • номера: договор 2026-101, приказы УЦ-102/2026
-        ▼
-Record<string, string>  ({{org_name}}, {{students_table}}, …)
-        │
-        ▼
-renderTemplate(html, variables)  →  HTML
-        │
-        ▼
-preview / download  (в Синтагме → html-to-pdf)
-```
-
-## Документы (10 типов из архива клиента)
-
-| key | Документ |
-|-----|----------|
-| contract | Договор (предмет, стоимость, реквизиты, приложение со списком) |
-| enrollment_order | Приказ об открытии и зачислении (УЦ-N/YYYY) |
-| expulsion_order | Приказ о закрытии и отчислении |
-| student_list | Список: ФИО, e-mail, паспорт серия/номер, образование |
-| class_journal | Журнал с датами занятий |
-| schedule | Расписание 4 дней |
-| attestation_sheet | Итоговая ведомость |
-| registration_book | Книга регистрации (ФРДО) |
-| title_page | Титульный лист «ДЕЛО» |
-| pass | Список на даты занятий |
-
-## Источник шаблонов
-
-Архив `для сайта (1).zip` — реальные документы группы 1-ПК-26.
+Архив модуля: `group-docs-module.tar.gz` в artifacts проекта.
