@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Документы группы — прототип</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.0/babel.min.js"></script>
+  <style>body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; }</style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+const { useState } = React;
+
+const GROUP = {
+  name: "1-ПК-26 Проектирование",
+  start: "13.01.2026",
+  end: "16.01.2026",
+  program: "Проектирование электроустановок во взрывоопасных зонах",
+  hours: 40,
+  color: "#6366f1",
+};
+
+const STUDENTS = [
+  "Иванов Иван Иванович",
+  "Петрова Анна Сергеевна",
+  "Сидоров Алексей Петрович",
+];
+
+const FOLDERS = [
+  { key: "contracts", title: "Договоры", hint: "Договоры с учениками группы" },
+  { key: "passports", title: "Паспорта", hint: "Сканы паспортов учеников" },
+  { key: "snils", title: "СНИЛС", hint: "Сканы СНИЛС учеников" },
+  { key: "exams", title: "Экзамены", hint: "Попытки и результаты аттестации" },
+  { key: "docs", title: "Документы группы", hint: "Приказы, журналы, ведомости" },
+];
+
+function App() {
+  const [folder, setFolder] = useState(null);
+  const [contracts, setContracts] = useState([]);
+  const [dialog, setDialog] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  const generate = () => {
+    setBusy(true);
+    setTimeout(() => {
+      const n = "2026-" + String(Math.floor(Math.random() * 900 + 100));
+      setContracts((prev) => [{
+        id: Date.now(), number: n, name: "Договор " + n,
+        students: STUDENTS.join(", "), date: new Date().toLocaleDateString("ru-RU"),
+      }, ...prev]);
+      setBusy(false);
+      setDialog(false);
+    }, 1000);
+  };
+
+  return (
+    <div className="max-w-5xl mx-auto p-4 sm:p-8 space-y-4">
+      <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+        <strong>Прототип «Документы группы»</strong> — нажмите папку «Договоры» → «Быстрая генерация».
+      </div>
+
+      <div className="text-sm text-gray-500 flex gap-2 items-center">
+        <span>Ученики</span><span>/</span><span>Группы</span><span>/</span>
+        <span className="text-gray-900 font-medium">{GROUP.name}</span>
+        {folder && (<><span>/</span><span className="text-gray-900 font-medium">{FOLDERS.find(f => f.key === folder)?.title}</span></>)}
+      </div>
+
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl" style={{ background: GROUP.color + "22", color: GROUP.color }}>📁</div>
+          <div>
+            <h1 className="text-xl font-semibold">{GROUP.name}</h1>
+            <div className="text-sm text-gray-500 mt-1">{STUDENTS.length} учеников · {GROUP.start} — {GROUP.end}</div>
+          </div>
+        </div>
+        <button onClick={() => folder ? setFolder(null) : null} className="px-3 py-1.5 rounded-xl text-sm hover:bg-gray-100">← Назад</button>
+      </div>
+
+      {!folder && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          {FOLDERS.map((f) => (
+            <button key={f.key} onClick={() => setFolder(f.key)}
+              className="text-left p-4 rounded-2xl border border-gray-200 bg-white hover:shadow-sm hover:border-blue-300 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3 text-lg">
+                {f.key === "contracts" ? "📄" : f.key === "docs" ? "📋" : "📁"}
+              </div>
+              <div className="font-medium text-sm">{f.title}</div>
+              <div className="text-xs text-gray-500 mt-0.5">{f.hint}</div>
+              <div className="mt-2 text-xs text-gray-400">{f.key === "contracts" ? contracts.length : 0} файл(ов)</div>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {folder === "contracts" && (
+        <div className="space-y-4">
+          <button onClick={() => setDialog(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 shadow-sm">
+            ⚡ Быстрая генерация
+          </button>
+
+          {contracts.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-gray-300 p-10 text-center">
+              <div className="text-4xl mb-3">📄</div>
+              <p className="text-sm font-medium mb-1">Договоров пока нет</p>
+              <p className="text-xs text-gray-500 mb-4">Нажмите «Быстрая генерация»</p>
+              <button onClick={() => setDialog(true)} className="px-4 py-2 rounded-xl text-sm font-medium bg-blue-600 text-white">
+                ⚡ Быстрая генерация
+              </button>
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-gray-200 overflow-hidden bg-white">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 text-left text-xs text-gray-500">
+                  <tr>
+                    <th className="px-4 py-3">№</th>
+                    <th className="px-4 py-3">Название</th>
+                    <th className="px-4 py-3">Ученики</th>
+                    <th className="px-4 py-3">Дата</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {contracts.map((c) => (
+                    <tr key={c.id} className="border-t border-gray-100">
+                      <td className="px-4 py-3 font-mono text-xs">{c.number}</td>
+                      <td className="px-4 py-3 font-medium">{c.name}</td>
+                      <td className="px-4 py-3 text-gray-500">{c.students}</td>
+                      <td className="px-4 py-3 text-gray-500">{c.date}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {folder && folder !== "contracts" && (
+        <div className="rounded-2xl border border-dashed border-gray-300 p-10 text-center text-sm text-gray-500">
+          Папка «{FOLDERS.find(f => f.key === folder)?.title}» — в разработке
+        </div>
+      )}
+
+      {dialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b">
+              <div>
+                <h2 className="font-semibold">Быстрая генерация договора</h2>
+                <p className="text-xs text-gray-500">Всё заполнено автоматически</p>
+              </div>
+              <button onClick={() => setDialog(false)} className="p-2 hover:bg-gray-100 rounded-lg">✕</button>
+            </div>
+            <div className="p-5 space-y-3 text-sm">
+              <div className="rounded-xl border p-3">
+                <div className="text-xs text-gray-500">Шаблон</div>
+                <div>Договор оказания платных образовательных услуг</div>
+              </div>
+              <div className="rounded-xl border p-3">
+                <div className="text-xs text-gray-500">Ученики</div>
+                {STUDENTS.map((s) => <div key={s}>{s}</div>)}
+              </div>
+              <div className="rounded-xl border p-3">
+                <div className="text-xs text-gray-500">Программа</div>
+                <div>{GROUP.program}</div>
+                <div className="text-xs text-gray-500">{GROUP.hours} ак. ч.</div>
+              </div>
+              <div className="rounded-xl border p-3">
+                <div className="text-xs text-gray-500">Дата и номер</div>
+                <div>Дата: {new Date().toLocaleDateString("ru-RU")}</div>
+                <div className="text-xs text-gray-500">Номер будет присвоен автоматически</div>
+              </div>
+            </div>
+            <div className="px-5 py-4 border-t flex justify-end gap-2">
+              <button onClick={() => setDialog(false)} className="px-4 py-2 rounded-xl text-sm hover:bg-gray-100">Отмена</button>
+              <button onClick={generate} disabled={busy}
+                className="px-4 py-2 rounded-xl text-sm font-medium bg-blue-600 text-white disabled:opacity-50">
+                {busy ? "Генерация…" : "✓ Сгенерировать договор"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
