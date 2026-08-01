@@ -13,7 +13,9 @@ let seq = 100;
 
 function nextNumber(prefix: string, year: number): string {
   seq += 1;
-  return `${prefix}${year}-${String(seq).padStart(3, "0")}`;
+  // Client style: УЦ-4/2026 for orders, 2026-101 for contracts
+  if (prefix === "УЦ-") return `УЦ-${seq}/${year}`;
+  return `${year}-${String(seq).padStart(3, "0")}`;
 }
 
 export function generateDocument(
