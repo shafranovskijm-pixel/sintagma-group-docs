@@ -75,33 +75,3 @@ export interface GeneratedDocument {
   status: "active" | "draft";
   created_at: string;
 }
-
-/**
- * SQL (для миграции в Синтагму):
- *
- * create table group_doc_templates (
- *   id uuid primary key default gen_random_uuid(),
- *   organization_id uuid not null,
- *   doc_type text not null,
- *   name text not null,
- *   body_html text not null,
- *   is_default boolean default false,
- *   created_at timestamptz default now()
- * );
- *
- * create table group_documents (
- *   id uuid primary key default gen_random_uuid(),
- *   organization_id uuid not null,
- *   group_id uuid not null,
- *   doc_type text not null,
- *   name text not null,
- *   document_number text,
- *   document_date date,
- *   variables jsonb not null default '{}',
- *   file_path text,
- *   status text not null default 'active',
- *   student_user_id uuid,
- *   company_id uuid,
- *   created_at timestamptz default now()
- * );
- */
