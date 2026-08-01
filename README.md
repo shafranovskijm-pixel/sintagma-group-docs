@@ -1,34 +1,34 @@
 # sintagma-group-docs
 
-Отдельный модуль **«Документы группы»** для платформы [Синтагма](https://github.com/shafranovskijm-pixel/synthagma-ver-0.1).
+Модуль **«Документы группы»**: переменные, шаблоны, генерация, предпросмотр и скачивание.
 
-Цель: сделать Windows-подобный интерфейс папок + **быструю генерацию договора одной кнопкой**, не ломая основной код Синтагмы. После проверки UX — встраиваем компоненты обратно.
-
-## Что внутри
-
-| Файл | Назначение |
-|------|------------|
-| `src/lib/groupDocuments.ts` | Фундамент: реестр всех типов документов группы |
-| `src/components/GroupFolderView.tsx` | Windows-like папки группы |
-| `src/components/ContractsFolder.tsx` | Папка «Договоры» + кнопка «Быстрая генерация» |
-| `src/components/QuickGenerateDialog.tsx` | Один экран, одна кнопка |
-| `src/lib/mockData.ts` | Мок-данные + симуляция генерации |
-
-## Как запустить
+## Запуск
 
 ```bash
 npm install
 npm run dev
 ```
 
-1. Откройте папку **«Договоры»**
-2. Нажмите **⚡ Быстрая генерация**
-3. Подтвердите — договор появится в таблице
+http://localhost:5173
 
-## Интеграция в Синтагму
+## Что умеет
 
-1. Скопировать `groupDocuments.ts` в `src/lib/`
-2. Заменить mock на реальный html-to-pdf + org_contracts
-3. Взять UX из ContractsFolder + QuickGenerateDialog
+1. **Переменные** — вкладка «Переменные»: все `{{key}}`, откуда берутся, значения
+2. **Генерация** — каждый тип из архива или весь пакет
+3. **Предпросмотр** — iframe + новая вкладка
+4. **Скачать** — HTML (в Синтагме → PDF)
 
-Репозиторий: https://github.com/shafranovskijm-pixel/sintagma-group-docs
+## Как подставляются переменные
+
+```
+GenerationContext (org + group + students + company)
+        ↓
+buildVariables()  →  Record<string, string>
+        ↓
+renderTemplate(html, variables)  →  HTML
+```
+
+- `src/lib/variables.ts` — каталог и сборка
+- `src/lib/templates.ts` — шаблоны
+- `src/lib/generate.ts` — генератор
+- `src/lib/schema.ts` — схема БД
