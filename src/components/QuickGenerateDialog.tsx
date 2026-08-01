@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Zap, X, Check, Loader2, FileSignature, Users, Calendar, BookOpen } from "lucide-react";
-import type { Student, ContractTemplate, GroupInfo, GeneratedContract } from "@/types";
-import { mockGenerateContract } from "@/lib/mockData";
+import type { Student, ContractTemplate, GroupInfo, GeneratedContract } from "../types";
+import { mockGenerateContract } from "../lib/mockData";
 
 interface Props {
   open: boolean;
@@ -12,7 +12,6 @@ interface Props {
   templates: ContractTemplate[];
 }
 
-/** Один экран. Одна кнопка. Всё уже заполнено. */
 export function QuickGenerateDialog({
   open, onClose, onGenerated, group, students, templates,
 }: Props) {
@@ -61,7 +60,7 @@ export function QuickGenerateDialog({
         <div className="p-5 space-y-3">
           <SummaryRow icon={<FileSignature className="w-4 h-4" />} label="Шаблон">
             {defaultTemplate ? defaultTemplate.name : (
-              <span className="text-destructive">Нет шаблона — загрузите шаблон</span>
+              <span className="text-destructive">Нет шаблона</span>
             )}
           </SummaryRow>
           <SummaryRow icon={<Users className="w-4 h-4" />} label="Ученики">
