@@ -81,7 +81,8 @@ export default function App() {
         {tab === "vars" && (
           <div className="rounded-2xl border border-border bg-white overflow-hidden">
             <div className="p-4 border-b border-border text-sm text-muted-foreground">
-              Значения из org + group + students + company. В шаблоне: <code className="text-xs bg-muted px-1 rounded">{{"{{key}}"}</code>
+              Значения из org + group + students + company. В шаблоне:{" "}
+              <code className="text-xs bg-muted px-1 rounded">{"{{key}}"}</code>
             </div>
             <div className="max-h-[480px] overflow-auto">
               <table className="w-full text-sm">
@@ -96,7 +97,7 @@ export default function App() {
                 <tbody className="divide-y divide-border">
                   {VARIABLE_CATALOG.map((v) => (
                     <tr key={v.key} className="hover:bg-muted/30">
-                      <td className="px-3 py-1.5 font-mono text-xs text-primary">{{"{{" + v.key + "}}"}</td>
+                      <td className="px-3 py-1.5 font-mono text-xs text-primary">{"{{" + v.key + "}}"}</td>
                       <td className="px-3 py-1.5">{v.label}</td>
                       <td className="px-3 py-1.5 text-xs text-muted-foreground">{v.source}</td>
                       <td className="px-3 py-1.5 text-xs max-w-xs truncate">
