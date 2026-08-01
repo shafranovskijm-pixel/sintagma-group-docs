@@ -38,7 +38,9 @@ export const SAMPLE_CONTEXT: GenerationContext = {
       snils: "123-456-789 00",
       citizenship: "Российская Федерация",
       email: "ivanov@example.com",
+      phone: "+7 921 111-11-11",
       education: "высшее",
+      address: "г. Санкт-Петербург",
     },
     {
       user_id: "s2",
@@ -49,7 +51,9 @@ export const SAMPLE_CONTEXT: GenerationContext = {
       snils: "987-654-321 00",
       citizenship: "Российская Федерация",
       email: "petrova@example.com",
+      phone: "+7 921 222-22-22",
       education: "высшее",
+      address: "г. Санкт-Петербург",
     },
     {
       user_id: "s3",
@@ -60,7 +64,9 @@ export const SAMPLE_CONTEXT: GenerationContext = {
       snils: "111-222-333 44",
       citizenship: "Российская Федерация",
       email: "sidorov@example.com",
+      phone: "+7 921 333-33-33",
       education: "высшее",
+      address: "г. Санкт-Петербург",
     },
   ],
   company: {
