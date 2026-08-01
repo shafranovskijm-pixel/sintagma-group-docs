@@ -1,7 +1,4 @@
 import { useState } from "react";
-import { Zap, FileSignature, Download, Trash2, Upload } from "lucide-react";
-import { format } from "date-fns";
-import { ru } from "date-fns/locale";
 import type { Student, ContractTemplate, GroupInfo, GeneratedContract } from "../types";
 import { QuickGenerateDialog } from "./QuickGenerateDialog";
 
@@ -35,14 +32,14 @@ export function ContractsFolder({
           disabled={students.length === 0}
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 shadow-sm"
         >
-          <Zap className="w-4 h-4" />
+          <span data-icon="Zap" className="w-4 h-4" />
           Быстрая генерация
         </button>
         <button disabled className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-sm border border-border text-muted-foreground opacity-60 cursor-not-allowed">
-          <FileSignature className="w-4 h-4" /> Расширенный режим
+          <span data-icon="FileSignature" className="w-4 h-4" /> Расширенный режим
         </button>
         <button disabled className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-sm border border-border text-muted-foreground opacity-60 cursor-not-allowed">
-          <Upload className="w-4 h-4" /> Загрузить
+          <span data-icon="Upload" className="w-4 h-4" /> Загрузить
         </button>
       </div>
 
@@ -54,11 +51,11 @@ export function ContractsFolder({
 
       {contracts.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border p-10 text-center">
-          <FileSignature className="w-10 h-10 mx-auto text-muted-foreground/50 mb-3" />
+          <span data-icon="FileSignature" className="w-10 h-10 mx-auto text-muted-foreground/50 mb-3" />
           <p className="text-sm font-medium text-foreground mb-1">Договоров пока нет</p>
           <p className="text-xs text-muted-foreground mb-4">Нажмите «Быстрая генерация»</p>
           <button onClick={() => setQuickOpen(true)} disabled={students.length === 0} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-primary text-primary-foreground disabled:opacity-50">
-            <Zap className="w-4 h-4" /> Быстрая генерация
+            <span data-icon="Zap" className="w-4 h-4" /> Быстрая генерация
           </button>
         </div>
       ) : (
@@ -79,14 +76,14 @@ export function ContractsFolder({
                   <td className="px-4 py-3 font-mono text-xs">{c.contract_number}</td>
                   <td className="px-4 py-3 font-medium">{c.name}</td>
                   <td className="px-4 py-3 text-muted-foreground">{c.student_names.join(", ")}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{format(new Date(c.contract_date), "d MMM yyyy", { locale: ru })}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{String(new Date(c.contract_date))}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="inline-flex gap-1">
                       <button className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs hover:bg-muted">
-                        <Download className="w-3.5 h-3.5" /> Открыть
+                        <span data-icon="Download" className="w-3.5 h-3.5" /> Открыть
                       </button>
                       <button onClick={() => handleDelete(c.id)} className="p-1.5 rounded-lg text-destructive hover:bg-destructive/10">
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <span data-icon="Trash2" className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </td>
