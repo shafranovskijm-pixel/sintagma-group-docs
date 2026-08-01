@@ -6,32 +6,28 @@
 <title>Документы группы — проводник</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#dfe7f0}
+body{margin:0;font-family:system-ui,Segoe UI,sans-serif;background:#dfe7f0}
 .win{border:1px solid #94a3b8;border-radius:10px;overflow:hidden;box-shadow:0 10px 30px rgba(15,23,42,.12);background:#f3f3f3}
 .titlebar{background:linear-gradient(#f8fafc,#e2e8f0);border-bottom:1px solid #cbd5e1;padding:8px 12px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
 .addr{background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;font-size:12px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .btn{border:1px solid #cbd5e1;background:#fff;border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer}
-.btn:hover{background:#f1f5f9}
-.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:hover{background:#f1f5f9}.btn:disabled{opacity:.45;cursor:not-allowed}
 .btn-primary{background:#2563eb;color:#fff;border-color:#2563eb;font-weight:600}
-.btn-primary:hover{background:#1d4ed8}
 .status{background:#f8fafc;border-top:1px solid #e2e8f0;padding:4px 12px;font-size:11px;color:#64748b;display:flex;justify-content:space-between}
 .folder-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;padding:14px}
-.folder-item,.file-item{border:1px solid transparent;border-radius:8px;padding:10px 6px;text-align:center;cursor:pointer;background:transparent}
+.folder-item,.file-item{border:1px solid transparent;border-radius:8px;padding:10px 6px;text-align:center;cursor:pointer}
 .folder-item:hover,.file-item:hover{background:#eff6ff;border-color:#bfdbfe}
-.folder-item.active,.file-item.active{background:#dbeafe;border-color:#93c5fd}
-.folder-icon{font-size:42px;line-height:1}
-.file-icon{font-size:34px;line-height:1}
-.pane{min-height:420px}
-iframe{width:100%;height:100%;border:0;background:#fff}
+.file-item.active{background:#dbeafe;border-color:#93c5fd}
+.folder-icon{font-size:42px;line-height:1}.file-icon{font-size:34px;line-height:1}
+.pane{min-height:420px}iframe{width:100%;height:100%;border:0;background:#fff}
 </style>
 </head>
 <body class="p-3 sm:p-5">
 <div id="root" class="max-w-6xl mx-auto"></div>
 <script>
-/* PLACEHOLDER_CORE_AND_UI */
-document.getElementById('root').innerHTML='<div class="p-8">Загрузка… откройте обновлённую версию после push полного файла.</div>';
+/* full content continues in push_files */
+document.getElementById('root').innerHTML='<div class="win p-8"><b>Обновление…</b> Обновите страницу через 10 секунд.</div>';
 </script>
 </body>
 </html>
