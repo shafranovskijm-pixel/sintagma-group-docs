@@ -3,11 +3,6 @@ import { GroupFolderView } from "./components/GroupFolderView";
 import { MOCK_GROUP, MOCK_STUDENTS, MOCK_TEMPLATES } from "./lib/mockData";
 import type { GeneratedContract } from "./types";
 
-/**
- * Демо-приложение.
- * Показывает Windows-подобный интерфейс папок группы
- * и рабочую «Быструю генерацию» договора на мок-данных.
- */
 export default function App() {
   const [contracts, setContracts] = useState<GeneratedContract[]>([]);
 

@@ -1,4 +1,4 @@
-import type { Student, ContractTemplate, GroupInfo, GeneratedContract } from "@/types";
+import type { Student, ContractTemplate, GroupInfo, GeneratedContract } from "../types";
 
 export const MOCK_GROUP: GroupInfo = {
   id: "group-1",
@@ -21,7 +21,6 @@ export const MOCK_TEMPLATES: ContractTemplate[] = [
   { id: "tpl-2", name: "Договор с юридическим лицом (краткий)", is_default: false },
 ];
 
-/** Симуляция генерации договора (в Синтагме здесь будет реальный вызов). */
 export async function mockGenerateContract(params: {
   students: Student[];
   template: ContractTemplate;
