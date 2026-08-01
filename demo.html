@@ -3,193 +3,458 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Документы группы — прототип</title>
+  <title>Документы группы — генератор</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.26.0/babel.min.js"></script>
-  <style>body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; }</style>
+  <style>
+    body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #f8fafc; }
+    iframe { background: #fff; }
+  </style>
 </head>
 <body>
   <div id="root"></div>
-  <script type="text/babel">
-const { useState } = React;
-
-const GROUP = {
-  name: "1-ПК-26 Проектирование",
-  start: "13.01.2026",
-  end: "16.01.2026",
-  program: "Проектирование электроустановок во взрывоопасных зонах",
-  hours: 40,
-  color: "#6366f1",
+  <script>
+const SAMPLE = {
+  organization: {
+    name: "ООО «Инжиниринговый центр «ГОРЭЛТЕХ»",
+    inn: "7806541216", kpp: "780601001", ogrn: "1187847116401",
+    address: "195176, г. Санкт-Петербург, ш. Революции, д. 18, лит. А, пом. 4Н",
+    director_name: "Дроздов Дмитрий Викторович",
+    director_position: "Генеральный директор",
+    bank_name: "Филиал ОПЕРУ Банка ВТБ (ПАО) в Санкт-Петербурге",
+    bank_bik: "044030704", bank_account: "40702810039000008313",
+    bank_corr_account: "30101810200000000704",
+    email: "d.drozdov@exd.ru", phone: "+7 (931) 227-49-77",
+    license: "№ 4299 от 07.12.2020",
+  },
+  group: {
+    id: "group-1", name: "1-ПК-26 Проектирование", number: "1-ПК-26",
+    start_date: "2026-01-13", end_date: "2026-01-16",
+    program_title: "Проектирование электроустановок во взрывоопасных зонах",
+    program_hours: 40, program_form: "очная",
+  },
+  students: [
+    { user_id: "s1", full_name: "Иванов Иван Иванович", birth_date: "15.03.1985", gender: "М",
+      passport: "Серия 4010 Номер 123456", snils: "123-456-789 00",
+      citizenship: "Российская Федерация", email: "ivanov@example.com", education: "высшее", address: "г. СПб" },
+    { user_id: "s2", full_name: "Петрова Анна Сергеевна", birth_date: "22.07.1990", gender: "Ж",
+      passport: "Серия 4012 Номер 654321", snils: "987-654-321 00",
+      citizenship: "Российская Федерация", email: "petrova@example.com", education: "высшее", address: "г. СПб" },
+    { user_id: "s3", full_name: "Сидоров Алексей Петрович", birth_date: "03.11.1988", gender: "М",
+      passport: "Серия 4008 Номер 112233", snils: "111-222-333 44",
+      citizenship: "Российская Федерация", email: "sidorov@example.com", education: "высшее", address: "г. СПб" },
+  ],
+  company: {
+    id: "c1", name: "ООО «Заказчик Пример»", inn: "7701234567",
+    kpp: "770101001", ogrn: "1027700123456",
+    address: "г. Москва, ул. Примерная, д. 1", director: "Смирнов П.П.",
+  },
 };
 
-const STUDENTS = [
-  "Иванов Иван Иванович",
-  "Петрова Анна Сергеевна",
-  "Сидоров Алексей Петрович",
+const DOC_TYPES = [
+  { key: "contract", title: "Договор", hint: "Договор оказания платных образовательных услуг" },
+  { key: "enrollment_order", title: "Приказ о зачислении", hint: "Приказ об открытии курса и зачислении" },
+  { key: "expulsion_order", title: "Приказ об отчислении", hint: "Приказ о закрытии курса" },
+  { key: "student_list", title: "Список обучающихся", hint: "Поимённый список" },
+  { key: "class_journal", title: "Журнал занятий", hint: "Журнал учёта посещаемости" },
+  { key: "schedule", title: "Расписание", hint: "Расписание учебных занятий" },
+  { key: "attestation_sheet", title: "Итоговая ведомость", hint: "Ведомость аттестации" },
+  { key: "registration_book", title: "Книга регистрации", hint: "Данные для ФРДО" },
+  { key: "title_page", title: "Титульный лист", hint: "Титульный лист группы" },
+  { key: "pass", title: "Пропуск", hint: "Пропуск на обучение" },
 ];
 
-const FOLDERS = [
-  { key: "contracts", title: "Договоры", hint: "Договоры с учениками группы" },
-  { key: "passports", title: "Паспорта", hint: "Сканы паспортов учеников" },
-  { key: "snils", title: "СНИЛС", hint: "Сканы СНИЛС учеников" },
-  { key: "exams", title: "Экзамены", hint: "Попытки и результаты аттестации" },
-  { key: "docs", title: "Документы группы", hint: "Приказы, журналы, ведомости" },
-];
-
-function App() {
-  const [folder, setFolder] = useState(null);
-  const [contracts, setContracts] = useState([]);
-  const [dialog, setDialog] = useState(false);
-  const [busy, setBusy] = useState(false);
-
-  const generate = () => {
-    setBusy(true);
-    setTimeout(() => {
-      const n = "2026-" + String(Math.floor(Math.random() * 900 + 100));
-      setContracts((prev) => [{
-        id: Date.now(), number: n, name: "Договор " + n,
-        students: STUDENTS.join(", "), date: new Date().toLocaleDateString("ru-RU"),
-      }, ...prev]);
-      setBusy(false);
-      setDialog(false);
-    }, 1000);
-  };
-
-  return (
-    <div className="max-w-5xl mx-auto p-4 sm:p-8 space-y-4">
-      <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-        <strong>Прототип «Документы группы»</strong> — нажмите папку «Договоры» → «Быстрая генерация».
-      </div>
-
-      <div className="text-sm text-gray-500 flex gap-2 items-center">
-        <span>Ученики</span><span>/</span><span>Группы</span><span>/</span>
-        <span className="text-gray-900 font-medium">{GROUP.name}</span>
-        {folder && (<><span>/</span><span className="text-gray-900 font-medium">{FOLDERS.find(f => f.key === folder)?.title}</span></>)}
-      </div>
-
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 flex items-start justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl" style={{ background: GROUP.color + "22", color: GROUP.color }}>📁</div>
-          <div>
-            <h1 className="text-xl font-semibold">{GROUP.name}</h1>
-            <div className="text-sm text-gray-500 mt-1">{STUDENTS.length} учеников · {GROUP.start} — {GROUP.end}</div>
-          </div>
-        </div>
-        <button onClick={() => folder ? setFolder(null) : null} className="px-3 py-1.5 rounded-xl text-sm hover:bg-gray-100">← Назад</button>
-      </div>
-
-      {!folder && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-          {FOLDERS.map((f) => (
-            <button key={f.key} onClick={() => setFolder(f.key)}
-              className="text-left p-4 rounded-2xl border border-gray-200 bg-white hover:shadow-sm hover:border-blue-300 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3 text-lg">
-                {f.key === "contracts" ? "📄" : f.key === "docs" ? "📋" : "📁"}
-              </div>
-              <div className="font-medium text-sm">{f.title}</div>
-              <div className="text-xs text-gray-500 mt-0.5">{f.hint}</div>
-              <div className="mt-2 text-xs text-gray-400">{f.key === "contracts" ? contracts.length : 0} файл(ов)</div>
-            </button>
-          ))}
-        </div>
-      )}
-
-      {folder === "contracts" && (
-        <div className="space-y-4">
-          <button onClick={() => setDialog(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 shadow-sm">
-            ⚡ Быстрая генерация
-          </button>
-
-          {contracts.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-gray-300 p-10 text-center">
-              <div className="text-4xl mb-3">📄</div>
-              <p className="text-sm font-medium mb-1">Договоров пока нет</p>
-              <p className="text-xs text-gray-500 mb-4">Нажмите «Быстрая генерация»</p>
-              <button onClick={() => setDialog(true)} className="px-4 py-2 rounded-xl text-sm font-medium bg-blue-600 text-white">
-                ⚡ Быстрая генерация
-              </button>
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-gray-200 overflow-hidden bg-white">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50 text-left text-xs text-gray-500">
-                  <tr>
-                    <th className="px-4 py-3">№</th>
-                    <th className="px-4 py-3">Название</th>
-                    <th className="px-4 py-3">Ученики</th>
-                    <th className="px-4 py-3">Дата</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {contracts.map((c) => (
-                    <tr key={c.id} className="border-t border-gray-100">
-                      <td className="px-4 py-3 font-mono text-xs">{c.number}</td>
-                      <td className="px-4 py-3 font-medium">{c.name}</td>
-                      <td className="px-4 py-3 text-gray-500">{c.students}</td>
-                      <td className="px-4 py-3 text-gray-500">{c.date}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      )}
-
-      {folder && folder !== "contracts" && (
-        <div className="rounded-2xl border border-dashed border-gray-300 p-10 text-center text-sm text-gray-500">
-          Папка «{FOLDERS.find(f => f.key === folder)?.title}» — в разработке
-        </div>
-      )}
-
-      {dialog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b">
-              <div>
-                <h2 className="font-semibold">Быстрая генерация договора</h2>
-                <p className="text-xs text-gray-500">Всё заполнено автоматически</p>
-              </div>
-              <button onClick={() => setDialog(false)} className="p-2 hover:bg-gray-100 rounded-lg">✕</button>
-            </div>
-            <div className="p-5 space-y-3 text-sm">
-              <div className="rounded-xl border p-3">
-                <div className="text-xs text-gray-500">Шаблон</div>
-                <div>Договор оказания платных образовательных услуг</div>
-              </div>
-              <div className="rounded-xl border p-3">
-                <div className="text-xs text-gray-500">Ученики</div>
-                {STUDENTS.map((s) => <div key={s}>{s}</div>)}
-              </div>
-              <div className="rounded-xl border p-3">
-                <div className="text-xs text-gray-500">Программа</div>
-                <div>{GROUP.program}</div>
-                <div className="text-xs text-gray-500">{GROUP.hours} ак. ч.</div>
-              </div>
-              <div className="rounded-xl border p-3">
-                <div className="text-xs text-gray-500">Дата и номер</div>
-                <div>Дата: {new Date().toLocaleDateString("ru-RU")}</div>
-                <div className="text-xs text-gray-500">Номер будет присвоен автоматически</div>
-              </div>
-            </div>
-            <div className="px-5 py-4 border-t flex justify-end gap-2">
-              <button onClick={() => setDialog(false)} className="px-4 py-2 rounded-xl text-sm hover:bg-gray-100">Отмена</button>
-              <button onClick={generate} disabled={busy}
-                className="px-4 py-2 rounded-xl text-sm font-medium bg-blue-600 text-white disabled:opacity-50">
-                {busy ? "Генерация…" : "✓ Сгенерировать договор"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+const MONTHS = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+function formatDateRu(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d)) return iso;
+  return "«" + String(d.getDate()).padStart(2,"0") + "» " + MONTHS[d.getMonth()] + " " + d.getFullYear() + " г.";
+}
+function formatDateShort(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d)) return iso;
+  return d.toLocaleDateString("ru-RU");
+}
+function esc(s) {
+  return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function PAGE(body) {
+  return '<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"/><style>' +
+    "body{font-family:'Times New Roman',Times,serif;font-size:13px;line-height:1.35;color:#000;max-width:820px;margin:20px auto;padding:0 18px}" +
+    "h1{text-align:center;font-size:15px;margin:12px 0 8px}h2{text-align:center;font-size:14px}" +
+    ".right{text-align:right}.center{text-align:center}" +
+    "table{border-collapse:collapse;width:100%;margin:10px 0;font-size:12px}" +
+    "th,td{border:1px solid #333;padding:3px 6px;vertical-align:top}th{background:#f3f3f3}" +
+    ".no-border td{border:none;padding:2px 4px}.sig{margin-top:28px}p{margin:6px 0}" +
+    "</style></head><body>" + body + "</body></html>";
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+function buildStudentsTable(students) {
+  const rows = students.map((s,i) =>
+    "<tr><td style='text-align:center'>"+(i+1)+"</td><td>"+esc(s.full_name)+"</td><td>"+esc(s.passport||"—")+"</td><td>"+esc(s.snils||"—")+"</td></tr>"
+  ).join("");
+  return "<table><thead><tr><th>№</th><th>ФИО</th><th>Паспорт</th><th>СНИЛС</th></tr></thead><tbody>"+rows+"</tbody></table>";
+}
+function buildListRows(students, ctx) {
+  return students.map((s,i) =>
+    "<tr><td style='text-align:center'>"+(i+1)+"</td><td>"+esc(s.full_name)+"</td><td>"+esc(ctx.group.program_title)+
+    "</td><td style='text-align:center'>"+ctx.group.program_hours+"</td><td>"+
+    formatDateShort(ctx.group.start_date)+"–"+formatDateShort(ctx.group.end_date)+"</td><td></td></tr>"
+  ).join("");
+}
+function buildJournalRows(students) {
+  return students.map((s,i) =>
+    "<tr><td style='text-align:center'>"+(i+1)+"</td><td>"+esc(s.full_name)+
+    "</td><td style='text-align:center'>V</td><td style='text-align:center'>V</td><td style='text-align:center'>V</td><td style='text-align:center'>V</td></tr>"
+  ).join("");
+}
+function buildAttestationRows(students) {
+  const scores = [96,88,92,85,90,78];
+  return students.map((s,i) => {
+    const sc = scores[i % scores.length];
+    const g = sc >= 90 ? "5" : sc >= 75 ? "4" : "3";
+    return "<tr><td style='text-align:center'>"+(i+1)+"</td><td>"+esc(s.full_name)+
+      "</td><td style='text-align:center'>"+sc+"</td><td style='text-align:center'>"+g+"</td></tr>";
+  }).join("");
+}
+function buildRegRows(students, ctx, orderNum) {
+  return students.map((s,i) =>
+    "<tr><td style='text-align:center'>"+(i+1)+"</td><td>Удостоверение о ПК</td><td>"+esc(ctx.group.program_title)+
+    ". Группа "+esc(ctx.group.number)+"</td><td></td><td></td><td>"+esc(s.full_name)+"</td><td>"+esc(s.birth_date||"")+
+    "</td><td>"+esc(s.gender||"")+"</td><td>"+esc(s.passport||"")+"</td><td>"+esc(s.citizenship||"РФ")+
+    "</td><td>"+esc(orderNum)+"</td><td></td><td></td><td></td><td></td><td></td></tr>"
+  ).join("");
+}
+
+let seq = 100;
+function nextNum(prefix) {
+  seq += 1;
+  return prefix + new Date().getFullYear() + "-" + String(seq).padStart(3,"0");
+}
+
+function buildVariables(ctx, opts) {
+  opts = opts || {};
+  const today = opts.documentDate || new Date().toISOString().slice(0,10);
+  const primary = ctx.students[opts.primaryStudentIndex || 0] || {};
+  const orderNum = opts.documentNumber || "";
+  const price = opts.totalPrice || 0;
+  return {
+    org_name: ctx.organization.name, org_inn: ctx.organization.inn, org_kpp: ctx.organization.kpp,
+    org_ogrn: ctx.organization.ogrn, org_address: ctx.organization.address,
+    org_director_name: ctx.organization.director_name, org_director_position: ctx.organization.director_position,
+    org_bank_name: ctx.organization.bank_name||"", org_bank_bik: ctx.organization.bank_bik||"",
+    org_bank_account: ctx.organization.bank_account||"", org_bank_corr_account: ctx.organization.bank_corr_account||"",
+    org_email: ctx.organization.email||"", org_phone: ctx.organization.phone||"", org_license: ctx.organization.license||"",
+    group_name: ctx.group.name, group_number: ctx.group.number,
+    program_title: ctx.group.program_title, program_hours: String(ctx.group.program_hours),
+    program_form: ctx.group.program_form,
+    start_date: formatDateShort(ctx.group.start_date), end_date: formatDateShort(ctx.group.end_date),
+    start_date_ru: formatDateRu(ctx.group.start_date), end_date_ru: formatDateRu(ctx.group.end_date),
+    individual_name: primary.full_name||"", individual_birth_date: primary.birth_date||"",
+    individual_gender: primary.gender||"", individual_passport: primary.passport||"",
+    individual_snils: primary.snils||"", individual_citizenship: primary.citizenship||"Российская Федерация",
+    individual_email: primary.email||"", individual_phone: primary.phone||"",
+    individual_education: primary.education||"", individual_address: primary.address||"",
+    company_name: (ctx.company&&ctx.company.name)||"", company_inn: (ctx.company&&ctx.company.inn)||"",
+    company_kpp: (ctx.company&&ctx.company.kpp)||"", company_ogrn: (ctx.company&&ctx.company.ogrn)||"",
+    company_address: (ctx.company&&ctx.company.address)||"", company_director: (ctx.company&&ctx.company.director)||"",
+    contract_number: orderNum, contract_date: formatDateShort(today), contract_date_ru: formatDateRu(today),
+    order_number: orderNum, order_date: formatDateShort(today), order_date_ru: formatDateRu(today),
+    students_count: String(ctx.students.length),
+    total_price: price ? price.toLocaleString("ru-RU",{minimumFractionDigits:2}) : "",
+    total_price_words: price ? price.toLocaleString("ru-RU") + " руб." : "",
+    today: formatDateShort(today), today_ru: formatDateRu(today), year: String(new Date(today).getFullYear()),
+    students_table: buildStudentsTable(ctx.students),
+    students_list_rows: buildListRows(ctx.students, ctx),
+    journal_rows: buildJournalRows(ctx.students),
+    attestation_rows: buildAttestationRows(ctx.students),
+    registration_rows: buildRegRows(ctx.students, ctx, orderNum),
+  };
+}
+
+function renderTemplate(html, vars) {
+  const raw = { students_table:1, students_list_rows:1, journal_rows:1, attestation_rows:1, registration_rows:1 };
+  return html.replace(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g, function(m, key) {
+    if (!(key in vars)) return m;
+    const val = vars[key] == null ? "" : vars[key];
+    return raw[key] ? val : esc(val);
+  });
+}
+
+const TPL = {};
+TPL.contract = PAGE(
+  '<p class="right">г. Санкт-Петербург<br/>{{contract_date_ru}}</p>' +
+  '<h1>ДОГОВОР<br/>на оказание платных образовательных услуг № {{contract_number}}</h1>' +
+  '<p><strong>{{org_name}}</strong> («Исполнитель»), в лице {{org_director_position}} {{org_director_name}}, ' +
+  'и <strong>{{company_name}}{{individual_name}}</strong> («Заказчик») заключили договор:</p>' +
+  '<h2>1. ПРЕДМЕТ ДОГОВОРА</h2>' +
+  '<p>1.1. Программа <strong>«{{program_title}}»</strong> ({{program_hours}} ак. ч., {{program_form}}), ' +
+  'группа <strong>{{group_number}}</strong>, срок: {{start_date}} — {{end_date}}.</p>' +
+  '<p>1.2. Обучающихся: <strong>{{students_count}}</strong>.</p>{{students_table}}' +
+  '<h2>2. СТОИМОСТЬ</h2><p>2.1. <strong>{{total_price}}</strong> руб. ({{total_price_words}}).</p>' +
+  '<h2>3. РЕКВИЗИТЫ</h2>' +
+  '<p>{{org_name}}<br/>ИНН {{org_inn}}, КПП {{org_kpp}}, ОГРН {{org_ogrn}}<br/>{{org_address}}<br/>' +
+  'Р/с {{org_bank_account}} в {{org_bank_name}}, БИК {{org_bank_bik}}</p>' +
+  '<div class="sig"><table class="no-border"><tr>' +
+  '<td width="50%"><strong>Исполнитель:</strong><br/>_________ / {{org_director_name}} /</td>' +
+  '<td width="50%"><strong>Заказчик:</strong><br/>_________ / {{company_director}}{{individual_name}} /</td>' +
+  '</tr></table></div>'
+);
+TPL.enrollment_order = PAGE(
+  '<p class="right">{{org_name}}</p><h1>ПРИКАЗ № {{order_number}}</h1><p class="center">от {{order_date}}</p>' +
+  '<p class="center"><strong>Об открытии курса и зачислении на обучение</strong></p>' +
+  '<p>1. Открыть курс «{{program_title}}» ({{program_hours}} ч.) с {{start_date_ru}}.</p>' +
+  '<p>2. Зачислить:</p><table><thead><tr><th>№</th><th>ФИО</th><th>Программа</th><th>Часов</th><th>Срок</th><th>Основание</th></tr></thead>' +
+  '<tbody>{{students_list_rows}}</tbody></table>' +
+  '<p>3. Присвоить группе номер <strong>{{group_number}}</strong>.</p>' +
+  '<div class="sig"><p>_________ / {{org_director_name}} /</p></div>'
+);
+TPL.expulsion_order = PAGE(
+  '<p class="right">{{org_name}}</p><h1>ПРИКАЗ № {{order_number}}</h1><p class="center">от {{order_date}}</p>' +
+  '<p class="center"><strong>О закрытии курса и отчислении</strong></p>' +
+  '<p>1. Закрыть курс «{{program_title}}» с {{end_date_ru}}.</p>' +
+  '<p>2. Отчислить с выдачей удостоверений:</p>' +
+  '<table><thead><tr><th>№</th><th>ФИО</th><th>Программа</th><th>Часов</th><th>Срок</th><th>Основание</th></tr></thead>' +
+  '<tbody>{{students_list_rows}}</tbody></table>' +
+  '<div class="sig"><p>_________ / {{org_director_name}} /</p></div>'
+);
+TPL.student_list = PAGE(
+  '<h1>СПИСОК ОБУЧАЮЩИХСЯ</h1><p class="center">Группа <strong>{{group_number}}</strong> · {{program_title}}</p>' +
+  '<p class="center">{{start_date}} — {{end_date}} · {{program_hours}} ак. ч.</p>' +
+  '<table><thead><tr><th>№</th><th>ФИО</th><th>Программа</th><th>Часов</th><th>Срок</th><th>Примечание</th></tr></thead>' +
+  '<tbody>{{students_list_rows}}</tbody></table>' +
+  '<div class="sig"><p>_________ / {{org_director_name}} /</p></div>'
+);
+TPL.schedule = PAGE(
+  '<h1>Расписание учебных занятий</h1><p class="center"><strong>«{{program_title}}»</strong></p>' +
+  '<p class="center">{{program_hours}} ак. ч. · Группа {{group_number}}</p>' +
+  '<table><thead><tr><th>Дата</th><th>Время</th><th>Тема</th><th>Часов</th><th>Преподаватель</th></tr></thead><tbody>' +
+  '<tr><td class="center">{{start_date}}</td><td class="center">09:00–18:00</td><td>Вводный модуль</td><td class="center">8</td><td>{{org_director_name}}</td></tr>' +
+  '<tr><td class="center">—</td><td class="center">09:00–18:00</td><td>Проектирование</td><td class="center">8</td><td>{{org_director_name}}</td></tr>' +
+  '<tr><td class="center">—</td><td class="center">09:00–18:00</td><td>Монтаж и документация</td><td class="center">8</td><td>{{org_director_name}}</td></tr>' +
+  '<tr><td class="center">{{end_date}}</td><td class="center">09:00–18:00</td><td>Аттестация</td><td class="center">8</td><td>{{org_director_name}}</td></tr>' +
+  '</tbody></table><div class="sig"><p>_________ / {{org_director_name}} /</p></div>'
+);
+TPL.class_journal = PAGE(
+  '<h1>Журнал учёта занятий</h1><p class="center">Группа <strong>{{group_number}}</strong> · «{{program_title}}»</p>' +
+  '<p class="center">{{program_hours}} ак. ч. · {{start_date}} — {{end_date}}</p>' +
+  '<table><thead><tr><th>№</th><th>ФИО</th><th>{{start_date}}</th><th>День 2</th><th>День 3</th><th>{{end_date}}</th></tr></thead>' +
+  '<tbody>{{journal_rows}}</tbody></table>' +
+  '<div class="sig"><p>_________ / {{org_director_name}} /</p></div>'
+);
+TPL.attestation_sheet = PAGE(
+  '<h1>ВЕДОМОСТЬ итоговой аттестации</h1>' +
+  '<p class="center">Дата {{end_date}} · № {{group_number}}/ИА</p>' +
+  '<p class="center">«{{program_title}}» · Группа {{group_number}} · {{program_hours}} час.</p>' +
+  '<p class="center">Вид: <strong>Экзамен</strong></p>' +
+  '<table><thead><tr><th>№</th><th>ФИО</th><th>Баллы %</th><th>Оценка</th></tr></thead>' +
+  '<tbody>{{attestation_rows}}</tbody></table>' +
+  '<div class="sig"><p>_________ / {{org_director_name}} /</p></div>'
+);
+TPL.registration_book = PAGE(
+  '<h1>Книга регистрации выдачи документов</h1><p class="center">{{org_name}}</p>' +
+  '<p class="center" style="font-size:11px">Данные для ФИС ФРДО</p>' +
+  '<table style="font-size:10px"><thead><tr>' +
+  '<th>№</th><th>Вид</th><th>Программа</th><th>Серия</th><th>Номер</th><th>ФИО</th><th>Д.р.</th><th>Пол</th>' +
+  '<th>Паспорт</th><th>Гражд.</th><th>Приказ</th><th>Выдача</th><th>Подп.</th><th>Получ.</th><th>Дов.</th><th>Утр.</th>' +
+  '</tr></thead><tbody>{{registration_rows}}</tbody></table>' +
+  '<div class="sig"><p>_________ / {{org_director_name}} /</p></div>'
+);
+TPL.title_page = PAGE(
+  '<div style="margin-top:60px" class="center">' +
+  '<p>Учебный центр</p><p><strong>{{org_name}}</strong></p>' +
+  '<h1 style="margin-top:50px;font-size:18px">ДЕЛО</h1>' +
+  '<p>группы слушателей ДПО</p><h2 style="margin-top:24px;font-size:20px">№ {{group_number}}</h2>' +
+  '<p style="margin-top:36px">По программе:</p><p><strong>«{{program_title}}»</strong></p>' +
+  '<p>{{program_hours}} академических часов</p>' +
+  '<p style="margin-top:28px">Сроки: с {{start_date}} по {{end_date}}</p>' +
+  '<p>Обучающихся: {{students_count}}</p>' +
+  '<p style="margin-top:60px">г. Санкт-Петербург<br/>{{year}} г.</p></div>'
+);
+TPL.pass = PAGE(
+  '<div class="center" style="border:2px solid #333;padding:28px;max-width:420px;margin:40px auto">' +
+  '<p>{{org_name}}</p><h1 style="margin:16px 0">ПРОПУСК</h1><p>на обучение</p>' +
+  '<p style="margin-top:12px"><strong>«{{program_title}}»</strong></p><p>{{program_hours}} ак. ч.</p>' +
+  '<p style="margin-top:14px">Группа: <strong>{{group_number}}</strong></p>' +
+  '<p style="margin-top:18px;font-size:16px"><strong>{{individual_name}}</strong></p>' +
+  '<p>{{start_date}} — {{end_date}}</p>' +
+  '<p style="margin-top:28px">М.П. &nbsp;&nbsp; _____________ / {{org_director_name}} /</p></div>'
+);
+
+function generateDocument(ctx, docType, opts) {
+  opts = opts || {};
+  const tpl = TPL[docType];
+  if (!tpl) throw new Error("Нет шаблона: " + docType);
+  const prefix = docType.indexOf("order") >= 0 ? "УЦ-" : "";
+  const documentNumber = opts.documentNumber || nextNum(prefix);
+  const documentDate = opts.documentDate || new Date().toISOString().slice(0,10);
+  const variables = buildVariables(ctx, {
+    documentNumber: documentNumber,
+    documentDate: documentDate,
+    totalPrice: opts.totalPrice,
+  });
+  const html = renderTemplate(tpl, variables);
+  const meta = DOC_TYPES.find(function(d){ return d.key === docType; });
+  return {
+    id: "doc-" + docType + "-" + Date.now() + "-" + Math.random().toString(36).slice(2,7),
+    doc_type: docType,
+    name: (meta ? meta.title : docType) + " № " + documentNumber,
+    document_number: documentNumber,
+    document_date: documentDate,
+    html: html,
+  };
+}
+
+const state = { docs: [], selected: null, price: 45000, error: null };
+
+function el(tag, attrs, children) {
+  const e = document.createElement(tag);
+  if (attrs) Object.keys(attrs).forEach(function(k) {
+    if (k === "className") e.className = attrs[k];
+    else if (k === "onClick") e.onclick = attrs[k];
+    else if (k === "innerHTML") e.innerHTML = attrs[k];
+    else if (k === "disabled") e.disabled = !!attrs[k];
+    else if (k === "value") e.value = attrs[k];
+    else if (k === "type") e.type = attrs[k];
+    else if (k === "srcDoc") e.srcdoc = attrs[k];
+    else e.setAttribute(k, attrs[k]);
+  });
+  (children || []).forEach(function(c) {
+    if (c == null) return;
+    if (typeof c === "string") e.appendChild(document.createTextNode(c));
+    else e.appendChild(c);
+  });
+  return e;
+}
+
+function downloadHtml(doc) {
+  const blob = new Blob([doc.html], { type: "text/html;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = doc.name.replace(/[^\w\u0400-\u04FF\- ]+/g, "_").slice(0, 80) + ".html";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function render() {
+  const root = document.getElementById("root");
+  root.innerHTML = "";
+  const header = el("div", { className: "max-w-6xl mx-auto p-4 sm:p-6 space-y-4" }, [
+    el("div", { className: "rounded-2xl border border-slate-200 bg-white p-5" }, [
+      el("h1", { className: "text-xl font-semibold" }, ["Документы группы — генератор"]),
+      el("p", { className: "text-sm text-slate-500 mt-1" }, [
+        SAMPLE.group.name + " · " + SAMPLE.students.length + " учеников · " + SAMPLE.organization.name
+      ]),
+      el("div", { className: "mt-3 flex flex-wrap items-center gap-3" }, [
+        el("label", { className: "text-sm flex items-center gap-2" }, [
+          "Стоимость (₽):",
+          (function(){
+            const inp = el("input", { type: "number", className: "w-28 rounded-lg border border-slate-200 px-2 py-1 text-sm", value: String(state.price) });
+            inp.oninput = function(){ state.price = Number(inp.value) || 0; };
+            return inp;
+          })()
+        ]),
+        el("button", {
+          className: "px-4 py-2 rounded-xl text-sm font-medium bg-blue-600 text-white",
+          onClick: function() {
+            try {
+              state.error = null;
+              const generated = DOC_TYPES.map(function(t) {
+                return generateDocument(SAMPLE, t.key, { totalPrice: state.price });
+              });
+              state.docs = generated.concat(state.docs);
+              state.selected = generated[0] || null;
+              render();
+            } catch (e) {
+              state.error = e.message || String(e);
+              render();
+            }
+          }
+        }, ["⚡ Сгенерировать весь пакет"]),
+      ]),
+      state.error ? el("div", { className: "mt-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm px-3 py-2" }, [state.error]) : null,
+    ]),
+    el("div", { className: "grid lg:grid-cols-2 gap-4" }, [
+      el("div", { className: "rounded-2xl border border-slate-200 bg-white divide-y divide-slate-100" },
+        [el("div", { className: "p-3 text-sm font-medium bg-slate-50" }, ["Типы документов"])].concat(
+          DOC_TYPES.map(function(t) {
+            return el("div", { className: "p-3 flex items-start justify-between gap-2" }, [
+              el("div", { className: "min-w-0" }, [
+                el("div", { className: "text-sm font-medium" }, [t.title]),
+                el("div", { className: "text-xs text-slate-500" }, [t.hint]),
+              ]),
+              el("button", {
+                className: "shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-600 text-white",
+                onClick: function() {
+                  try {
+                    state.error = null;
+                    const doc = generateDocument(SAMPLE, t.key, { totalPrice: state.price });
+                    state.docs = [doc].concat(state.docs);
+                    state.selected = doc;
+                    render();
+                  } catch (e) {
+                    state.error = e.message || String(e);
+                    render();
+                  }
+                }
+              }, ["Сгенерировать"]),
+            ]);
+          })
+        )
+      ),
+      el("div", { className: "space-y-3" }, [
+        el("div", { className: "rounded-2xl border border-slate-200 bg-white" }, [
+          el("div", { className: "p-3 text-sm font-medium bg-slate-50" }, ["Сгенерированные"]),
+          state.docs.length === 0
+            ? el("div", { className: "p-8 text-center text-sm text-slate-500" }, ["Пока пусто"])
+            : el("div", { className: "divide-y divide-slate-100 max-h-80 overflow-auto" },
+                state.docs.map(function(d) {
+                  return el("button", {
+                    className: "w-full text-left p-3 hover:bg-slate-50 " + (state.selected && state.selected.id === d.id ? "bg-blue-50" : ""),
+                    onClick: function(){ state.selected = d; render(); }
+                  }, [
+                    el("div", { className: "text-sm font-medium truncate" }, [d.name]),
+                    el("div", { className: "text-xs text-slate-500" }, [d.document_number + " · " + d.doc_type]),
+                  ]);
+                })
+              ),
+        ]),
+        state.selected ? el("div", { className: "rounded-2xl border border-slate-200 bg-white p-4 space-y-3" }, [
+          el("div", { className: "text-sm font-medium" }, [state.selected.name]),
+          el("div", { className: "flex flex-wrap gap-2" }, [
+            el("button", {
+              className: "px-3 py-1.5 rounded-lg text-sm border border-slate-200 hover:bg-slate-50",
+              onClick: function() {
+                const w = window.open("", "_blank");
+                if (w) { w.document.write(state.selected.html); w.document.close(); }
+              }
+            }, ["Открыть"]),
+            el("button", {
+              className: "px-3 py-1.5 rounded-lg text-sm border border-slate-200 hover:bg-slate-50",
+              onClick: function(){ downloadHtml(state.selected); }
+            }, ["Скачать HTML"]),
+          ]),
+          el("div", { className: "border border-slate-200 rounded-xl overflow-hidden h-72" }, [
+            el("iframe", { title: "preview", className: "w-full h-full", srcDoc: state.selected.html }),
+          ]),
+        ]) : null,
+      ]),
+    ]),
+  ]);
+  root.appendChild(header);
+}
+
+try {
+  render();
+} catch (e) {
+  document.getElementById("root").innerHTML =
+    '<div style="padding:24px;color:#b91c1c;font-family:system-ui">' +
+    "<h2>Ошибка загрузки</h2><pre>" + String(e && e.stack || e) + "</pre></div>";
+}
   </script>
 </body>
 </html>
