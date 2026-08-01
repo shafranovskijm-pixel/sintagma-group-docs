@@ -1,5 +1,4 @@
 import { useState, type ReactNode } from "react";
-import { Zap, X, Check, Loader2, FileSignature, Users, Calendar, BookOpen } from "lucide-react";
 import type { Student, ContractTemplate, GroupInfo, GeneratedContract } from "../types";
 import { mockGenerateContract } from "../lib/mockData";
 
@@ -45,7 +44,7 @@ export function QuickGenerateDialog({
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-              <Zap className="w-5 h-5" />
+              <span data-icon="Zap" className="w-5 h-5" />
             </div>
             <div>
               <h2 className="font-semibold text-base">Быстрая генерация договора</h2>
@@ -53,17 +52,17 @@ export function QuickGenerateDialog({
             </div>
           </div>
           <button onClick={onClose} disabled={busy} className="p-2 rounded-lg hover:bg-muted text-muted-foreground">
-            <X className="w-4 h-4" />
+            <span data-icon="X" className="w-4 h-4" />
           </button>
         </div>
 
         <div className="p-5 space-y-3">
-          <SummaryRow icon={<FileSignature className="w-4 h-4" />} label="Шаблон">
+          <SummaryRow icon={<span data-icon="FileSignature" className="w-4 h-4" />} label="Шаблон">
             {defaultTemplate ? defaultTemplate.name : (
               <span className="text-destructive">Нет шаблона</span>
             )}
           </SummaryRow>
-          <SummaryRow icon={<Users className="w-4 h-4" />} label="Ученики">
+          <SummaryRow icon={<span data-icon="Users" className="w-4 h-4" />} label="Ученики">
             {students.length === 0 ? (
               <span className="text-destructive">В группе нет учеников</span>
             ) : (
@@ -74,11 +73,11 @@ export function QuickGenerateDialog({
               </div>
             )}
           </SummaryRow>
-          <SummaryRow icon={<BookOpen className="w-4 h-4" />} label="Программа">
+          <SummaryRow icon={<span data-icon="BookOpen" className="w-4 h-4" />} label="Программа">
             <div className="text-sm">{group.program_title}</div>
             <div className="text-xs text-muted-foreground">{group.hours} ак. ч. · {group.name}</div>
           </SummaryRow>
-          <SummaryRow icon={<Calendar className="w-4 h-4" />} label="Дата и номер">
+          <SummaryRow icon={<span data-icon="Calendar" className="w-4 h-4" />} label="Дата и номер">
             <div className="text-sm">Дата: {today}</div>
             <div className="text-xs text-muted-foreground">Номер будет присвоен автоматически</div>
           </SummaryRow>
@@ -94,7 +93,7 @@ export function QuickGenerateDialog({
             disabled={!canGenerate || busy}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50"
           >
-            {busy ? (<><Loader2 className="w-4 h-4 animate-spin" /> Генерация…</>) : (<><Check className="w-4 h-4" /> Сгенерировать договор</>)}
+            {busy ? (<><span data-icon="Loader2" className="w-4 h-4 animate-spin" /> Генерация…</>) : (<><span data-icon="Check" className="w-4 h-4" /> Сгенерировать договор</>)}
           </button>
         </div>
       </div>
