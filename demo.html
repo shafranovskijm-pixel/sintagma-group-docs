@@ -1,33 +1,79 @@
 <!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Документы группы — проводник</title>
+<html lang="ru"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Документы группы</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-body{margin:0;font-family:system-ui,Segoe UI,sans-serif;background:#dfe7f0}
-.win{border:1px solid #94a3b8;border-radius:10px;overflow:hidden;box-shadow:0 10px 30px rgba(15,23,42,.12);background:#f3f3f3}
-.titlebar{background:linear-gradient(#f8fafc,#e2e8f0);border-bottom:1px solid #cbd5e1;padding:8px 12px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+body{margin:0;font-family:system-ui,sans-serif;background:#dfe7f0}
+.win{border:1px solid #94a3b8;border-radius:10px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.1);background:#f3f3f3}
+.tb{background:linear-gradient(#f8fafc,#e2e8f0);border-bottom:1px solid #cbd5e1;padding:8px 12px;font-size:13px;font-weight:600;display:flex;gap:8px;align-items:center}
 .addr{background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;font-size:12px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .btn{border:1px solid #cbd5e1;background:#fff;border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer}
-.btn:hover{background:#f1f5f9}.btn:disabled{opacity:.45;cursor:not-allowed}
-.btn-primary{background:#2563eb;color:#fff;border-color:#2563eb;font-weight:600}
-.status{background:#f8fafc;border-top:1px solid #e2e8f0;padding:4px 12px;font-size:11px;color:#64748b;display:flex;justify-content:space-between}
-.folder-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;padding:14px}
-.folder-item,.file-item{border:1px solid transparent;border-radius:8px;padding:10px 6px;text-align:center;cursor:pointer}
-.folder-item:hover,.file-item:hover{background:#eff6ff;border-color:#bfdbfe}
-.file-item.active{background:#dbeafe;border-color:#93c5fd}
-.folder-icon{font-size:42px;line-height:1}.file-icon{font-size:34px;line-height:1}
-.pane{min-height:420px}iframe{width:100%;height:100%;border:0;background:#fff}
-</style>
-</head>
-<body class="p-3 sm:p-5">
-<div id="root" class="max-w-6xl mx-auto"></div>
+.btn:hover{background:#f1f5f9}.btn-p{background:#2563eb;color:#fff;border-color:#2563eb;font-weight:600}
+.st{background:#f8fafc;border-top:1px solid #e2e8f0;padding:4px 12px;font-size:11px;color:#64748b;display:flex;justify-content:space-between}
+.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;padding:12px}
+.fi{border:1px solid transparent;border-radius:8px;padding:10px 4px;text-align:center;cursor:pointer}
+.fi:hover{background:#eff6ff;border-color:#bfdbfe}.fi.on{background:#dbeafe;border-color:#93c5fd}
+.ic{font-size:40px;line-height:1}.pane{min-height:400px}iframe{width:100%;height:100%;border:0;background:#fff}
+</style></head>
+<body class="p-3 sm:p-5"><div id="root" class="max-w-6xl mx-auto"></div>
 <script>
-/* full content continues in push_files */
-document.getElementById('root').innerHTML='<div class="win p-8"><b>Обновление…</b> Обновите страницу через 10 секунд.</div>';
-</script>
-</body>
-</html>
+const O={name:"ООО «ИЦ «ГОРЭЛТЕХ»",inn:"7806541216",dir:"Дроздов Д.В.",addr:"СПб, ш. Революции, 18"};
+const G={name:"1-ПК-26",num:"1-ПК-26",prog:"Проектирование электроустановок во взрывоопасных зонах",h:40,from:"13.01.2026",to:"16.01.2026"};
+const S=[{n:"Иванов Иван Иванович",p:"4010 123456",s:"123-456-789 00"},{n:"Петрова Анна Сергеевна",p:"4012 654321",s:"987-654-321 00"},{n:"Сидоров Алексей Петрович",p:"4008 112233",s:"111-222-333 44"}];
+const TYPES=[["contract","Договор"],["enrollment_order","Приказ о зачислении"],["expulsion_order","Приказ об отчислении"],["student_list","Список"],["class_journal","Журнал"],["schedule","Расписание"],["attestation_sheet","Ведомость"],["registration_book","Книга ФРДО"],["title_page","Титульный лист"],["pass","Пропуск"]];
+let seq=100,state={view:"root",docs:[],sel:null,price:45000,err:null};
+function PAGE(b){return"<!DOCTYPE html><html><head><meta charset=utf-8><style>body{font-family:Times New Roman,serif;font-size:13px;max-width:800px;margin:20px auto;padding:0 16px}h1{text-align:center}table{border-collapse:collapse;width:100%;font-size:12px}td,th{border:1px solid #333;padding:3px 5px}th{background:#eee}</style></head><body>"+b+"</body></html>"}
+function table(){return"<table><tr><th>№</th><th>ФИО</th><th>Паспорт</th><th>СНИЛС</th></tr>"+S.map((x,i)=>"<tr><td>"+(i+1)+"</td><td>"+x.n+"</td><td>"+x.p+"</td><td>"+x.s+"</td></tr>").join("")+"</table>"}
+function gen(type){seq++;const num=(type.indexOf("order")>=0?"УЦ-":"")+ "2026-"+String(seq).padStart(3,"0");
+const body={
+contract:PAGE("<p style='text-align:right'>г. Санкт-Петербург</p><h1>ДОГОВОР № "+num+"</h1><p><b>"+O.name+"</b> и заказчик. Программа «"+G.prog+"», группа "+G.num+", "+G.h+" ч., "+G.from+" — "+G.to+".</p>"+table()+"<p>Стоимость: "+state.price.toLocaleString("ru-RU")+" руб.</p><p>_________ / "+O.dir+" /</p>"),
+enrollment_order:PAGE("<h1>ПРИКАЗ № "+num+"</h1><p>Об открытии курса «"+G.prog+"»</p>"+table()+"<p>Группа "+G.num+". _________ / "+O.dir+" /</p>"),
+expulsion_order:PAGE("<h1>ПРИКАЗ № "+num+"</h1><p>О закрытии курса «"+G.prog+"»</p>"+table()+"<p>_________ / "+O.dir+" /</p>"),
+student_list:PAGE("<h1>СПИСОК</h1><p>Группа "+G.num+"</p>"+table()),
+class_journal:PAGE("<h1>ЖУРНАЛ</h1><p>Группа "+G.num+"</p>"+table()),
+schedule:PAGE("<h1>РАСПИСАНИЕ</h1><p>«"+G.prog+"» · "+G.from+" — "+G.to+"</p>"),
+attestation_sheet:PAGE("<h1>ВЕДОМОСТЬ</h1>"+table()),
+registration_book:PAGE("<h1>КНИГА РЕГИСТРАЦИИ (ФРДО)</h1>"+table()),
+title_page:PAGE("<div style='text-align:center;margin-top:60px'><p>"+O.name+"</p><h1>ДЕЛО</h1><h2>№ "+G.num+"</h2><p>«"+G.prog+"»</p><p>"+G.from+" — "+G.to+"</p></div>"),
+pass:PAGE("<div style='border:2px solid #000;padding:24px;max-width:360px;margin:40px auto;text-align:center'><p>"+O.name+"</p><h1>ПРОПУСК</h1><p>«"+G.prog+"»</p><p>Группа "+G.num+"</p><p><b>"+S[0].n+"</b></p></div>")
+};
+return{id:"d-"+seq,doc_type:type,name:(TYPES.find(t=>t[0]===type)||[type,type])[1]+" № "+num,document_number:num,document_date:new Date().toLocaleDateString("ru-RU"),html:body[type]||PAGE("<p>"+type+"</p>")}}
+function el(t,a,c){const e=document.createElement(t);if(a)Object.keys(a).forEach(k=>{if(k==="className")e.className=a[k];else if(k==="onClick")e.onclick=a[k];else if(k==="srcDoc")e.srcdoc=a[k];else if(k==="disabled")e.disabled=!!a[k];else if(k==="value")e.value=a[k];else if(k==="type")e.type=a[k];else e.setAttribute(k,a[k])});(c||[]).forEach(x=>{if(x==null)return;e.appendChild(typeof x==="string"?document.createTextNode(x):x)});return e}
+function contracts(){return state.docs.filter(d=>d.doc_type==="contract")}
+function others(){return state.docs.filter(d=>d.doc_type!=="contract")}
+function runPkg(){state.docs=TYPES.map(t=>gen(t[0])).concat(state.docs);state.sel=state.docs[0];state.view="docs";render()}
+function runOne(t){const d=gen(t);state.docs=[d].concat(state.docs);state.sel=d;state.view=t==="contract"?"contracts":"docs";render()}
+function render(){
+const root=document.getElementById("root");root.innerHTML="";
+const crumbs=[el("button",{className:"btn",onClick:()=>{state.view="root";state.sel=null;render()}},["🏠"]),el("span",null,[" › "]),el("button",{className:"btn",onClick:()=>{state.view="root";render()}},[G.name])];
+if(state.view==="contracts")crumbs.push(el("span",null,[" › Договоры"]));
+if(state.view==="docs")crumbs.push(el("span",null,[" › Документы группы"]));
+let left;
+if(state.view==="root"){
+left=el("div",{className:"fg"},[
+el("button",{className:"fi",onClick:()=>{state.view="contracts";render()}},[el("div",{className:"ic"},["📁"]),el("div",{className:"text-sm font-medium"},["Договоры"]),el("div",{className:"text-[11px] text-slate-500"},[contracts().length+" объект(ов)"])]),
+el("button",{className:"fi",onClick:()=>{state.view="docs";render()}},[el("div",{className:"ic"},["📁"]),el("div",{className:"text-sm font-medium"},["Документы группы"]),el("div",{className:"text-[11px] text-slate-500"},[others().length+" объект(ов)"])])
+]);
+} else {
+const items=state.view==="contracts"?contracts():others();
+const top=el("div",{className:"px-3 py-2 border-b flex flex-wrap gap-2 bg-slate-50"},
+state.view==="contracts"?[el("button",{className:"btn",onClick:()=>runOne("contract")},["+ Договор"])]
+:TYPES.filter(t=>t[0]!=="contract").map(t=>el("button",{className:"btn",onClick:()=>runOne(t[0])},["+ "+t[1]]))
+);
+if(!items.length)left=el("div",{className:"pane flex flex-col"},[top,el("div",{className:"flex-1 flex flex-col items-center justify-center text-slate-500 p-10"},[el("div",{className:"ic"},["📁"]),el("p",{className:"text-sm mt-2"},["Папка пуста"])])]);
+else left=el("div",{className:"pane flex flex-col"},[top,el("div",{className:"fg"},items.map(d=>el("button",{className:"fi"+(state.sel&&state.sel.id===d.id?" on":""),onClick:()=>{state.sel=d;render()}},[el("div",{className:"ic"},["📄"]),el("div",{className:"text-xs font-medium"},[d.name]),el("div",{className:"text-[10px] text-slate-500"},[d.document_date])])))]);
+}
+let right;
+if(!state.sel)right=el("div",{className:"pane flex items-center justify-center text-xs text-slate-400 bg-slate-50"},["Выберите файл"]);
+else{const d=state.sel;right=el("div",{className:"pane flex flex-col bg-slate-50"},[el("div",{className:"px-3 py-2 border-b text-xs font-medium bg-white"},["Просмотр"]),el("div",{className:"p-3 flex flex-col gap-2 flex-1"},[el("div",{className:"text-sm font-medium"},[d.name]),el("div",{className:"flex gap-2"},[el("button",{className:"btn",onClick:()=>{const w=window.open("","_blank");if(w){w.document.write(d.html);w.document.close()}}},["Открыть"]),el("button",{className:"btn",onClick:()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([d.html],{type:"text/html"}));a.download=d.name+".html";a.click()}},["Скачать"])]),el("div",{className:"flex-1 border rounded-lg overflow-hidden bg-white min-h-[260px]"},[el("iframe",{className:"w-full h-full min-h-[260px]",srcDoc:d.html})])])])}
+const stL=state.view==="root"?"2 папки":state.view==="contracts"?contracts().length+" договор(ов)":others().length+" документ(ов)";
+root.appendChild(el("div",{className:"win"},[
+el("div",{className:"tb"},[el("span",null,["📁"]),el("span",null,["Документы группы — "+G.name]),el("span",{className:"ml-auto text-[11px] font-normal text-slate-500"},["Синтагма · проводник"])]),
+el("div",{className:"p-2 space-y-2"},[el("div",{className:"addr"},crumbs),el("div",{className:"flex flex-wrap gap-2 items-center"},[el("button",{className:"btn",disabled:state.view==="root",onClick:()=>{state.view="root";state.sel=null;render()}},["← Назад"]),el("label",{className:"text-xs flex items-center gap-1"},["₽",(function(){const i=el("input",{type:"number",value:String(state.price),className:"w-24 border rounded px-2 py-1 text-xs"});i.oninput=()=>{state.price=Number(i.value)||0};return i})()]),el("button",{className:"btn btn-p",onClick:runPkg},["Сгенерировать пакет"])])]),
+el("div",{className:"grid lg:grid-cols-[1fr_320px] border-t bg-white"},[el("div",{className:"border-r min-h-[400px]"},[left]),right]),
+el("div",{className:"st"},[el("span",null,[stL]),el("span",null,[O.name+" · "+S.length+" уч."])])
+]));
+}
+render();
+</script></body></html>
