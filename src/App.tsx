@@ -11,6 +11,7 @@ export default function App() {
   const [busy, setBusy] = useState(false);
   const [tab, setTab] = useState<"docs" | "vars">("docs");
   const [price, setPrice] = useState(45000);
+  const [error, setError] = useState<string | null>(null);
 
   const templates = getAllTemplates();
   const ctx = useMemo(
@@ -24,11 +25,14 @@ export default function App() {
 
   const runOne = (docType: DocType) => {
     setBusy(true);
+    setError(null);
     try {
       const doc = generateDocument(ctx, docType, { totalPrice: price });
       setDocs((prev) => [doc, ...prev]);
       setSelected(doc);
       setTab("docs");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Ошибка генерации");
     } finally {
       setBusy(false);
     }
@@ -36,11 +40,14 @@ export default function App() {
 
   const runPackage = () => {
     setBusy(true);
+    setError(null);
     try {
       const generated = templates.map((t) => generateDocument(ctx, t.doc_type, { totalPrice: price }));
       setDocs((prev) => [...generated, ...prev]);
       setSelected(generated[0] || null);
       setTab("docs");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Ошибка генерации пакета");
     } finally {
       setBusy(false);
     }
@@ -65,6 +72,9 @@ export default function App() {
               ⚡ Сгенерировать весь пакет
             </button>
           </div>
+          {error && (
+            <div className="mt-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm px-3 py-2">{error}</div>
+          )}
         </div>
 
         <div className="flex gap-2">
@@ -81,8 +91,7 @@ export default function App() {
         {tab === "vars" && (
           <div className="rounded-2xl border border-border bg-white overflow-hidden">
             <div className="p-4 border-b border-border text-sm text-muted-foreground">
-              Значения из org + group + students + company. В шаблоне:{" "}
-              <code className="text-xs bg-muted px-1 rounded">{"{{key}}"}</code>
+              Значения из org + group + students + company. В шаблоне: <code className="text-xs bg-muted px-1 rounded">{"{{key}}"}</code>
             </div>
             <div className="max-h-[480px] overflow-auto">
               <table className="w-full text-sm">
